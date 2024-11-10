@@ -1,0 +1,43 @@
+import socket
+
+# basic inställningar
+IP = "127.0.0.1"  # Detta är localhost
+PORT = 12345      # Välj en port som inte används
+
+# Skapar en socket för servern
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind((IP, PORT))
+server_socket.listen(1)  # Lyssnar efter en anslutning
+
+print(f"Servern är igång på {IP}:{PORT}")
+print("Väntar på anslutning...")
+
+# Accepterar en anslutning
+klient_socket, adress = server_socket.accept()
+print(f"Ansluten till: {adress}")
+
+# Loop för att chatta
+while True:
+    # Tar emot meddelande
+    try:
+        meddelande = klient_socket.recv(1024).decode()
+        if not meddelande:
+            break
+        print(meddelande)
+    except:
+        print("Något gick fel")
+        break
+    
+    # Skickar svar
+    svar = input("Skriv ett svar: ")
+    try:
+        klient_socket.send(svar.encode())
+        if svar.lower() == "hejdå":
+            break
+    except:
+        print("Något gick fel när vi skickade svaret")
+        break
+# Stäng anslutningen
+klient_socket.close()
+server_socket.close()
+print("Chatten är avslutad")
